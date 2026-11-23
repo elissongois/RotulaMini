@@ -1,0 +1,145 @@
+<!doctype html>
+<html lang="pt-BR">
+  <head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <meta name="theme-color" content="#f6f7f2">
+    <title>RotulaMini — rótulo nutricional local</title>
+    <link rel="stylesheet" href="./src/style.css">
+    <script type="module" src="./src/app.mjs"></script>
+  </head>
+  <body>
+    <header class="site-header">
+      <a class="brand" href="./" aria-label="RotulaMini, início">
+        <span class="brand-mark" aria-hidden="true">R</span>
+        <span>Rotula<span class="brand-light">Mini</span></span>
+      </a>
+      <span class="local-badge"><span aria-hidden="true"></span> Seus dados ficam neste navegador</span>
+    </header>
+
+    <main>
+      <section class="intro">
+        <p class="eyebrow">FERRAMENTA LOCAL · EXPERIMENTAL</p>
+        <h1>Da receita à<br><span>informação nutricional.</span></h1>
+        <p>Monte uma receita com alimentos da TACO e veja uma estimativa nutricional calculada no seu dispositivo.</p>
+      </section>
+
+      <div id="app-error" class="notice notice-error" role="alert" hidden></div>
+
+      <div class="workspace">
+        <section class="panel recipe-panel" aria-labelledby="recipe-heading">
+          <div class="section-heading">
+            <div>
+              <p class="eyebrow">SUA RECEITA</p>
+              <h2 id="recipe-heading">Monte a composição</h2>
+            </div>
+            <span id="food-count" class="count-pill">Carregando base…</span>
+          </div>
+
+          <div class="field-grid">
+            <label class="field field-wide">
+              <span>Nome da receita</span>
+              <input id="recipe-name" type="text" maxlength="100" placeholder="Ex.: Pão de queijo">
+            </label>
+            <label class="field">
+              <span>Rendimento final (g)</span>
+              <input id="yield-grams" type="number" min="0.01" step="any" inputmode="decimal" placeholder="Soma dos ingredientes">
+              <small>Opcional. Informe o peso após o preparo.</small>
+            </label>
+            <label class="field">
+              <span>Porção (g)</span>
+              <input id="serving-grams" type="number" min="0.01" step="any" inputmode="decimal" value="100">
+            </label>
+          </div>
+
+          <div class="ingredient-entry">
+            <label class="field food-field">
+              <span>Buscar alimento na TACO</span>
+              <input id="food-search" list="food-options" type="search" placeholder="Digite para buscar…" autocomplete="off">
+              <datalist id="food-options"></datalist>
+            </label>
+            <label class="field quantity-field">
+              <span>Quantidade (g)</span>
+              <input id="ingredient-grams" type="number" min="0.01" step="any" inputmode="decimal" placeholder="Ex.: 250">
+            </label>
+            <button id="add-ingredient" class="button button-dark add-button" type="button" disabled>Adicionar</button>
+          </div>
+
+          <div class="ingredients-heading">
+            <h3>Ingredientes</h3>
+            <span id="ingredient-total">0 itens</span>
+          </div>
+          <div class="ingredient-list-wrap">
+            <table class="ingredient-table">
+              <thead>
+                <tr><th>Alimento</th><th>Quantidade</th><th><span class="sr-only">Ação</span></th></tr>
+              </thead>
+              <tbody id="ingredient-list">
+                <tr class="empty-row"><td colspan="3">Adicione os ingredientes para começar.</td></tr>
+              </tbody>
+            </table>
+          </div>
+
+          <div class="recipe-actions">
+            <label class="field saved-field">
+              <span>Receitas salvas neste navegador</span>
+              <select id="saved-recipes">
+                <option value="">Selecione uma receita…</option>
+              </select>
+            </label>
+            <div class="button-row">
+              <button id="save-recipe" class="button button-outline" type="button">Salvar receita</button>
+              <button id="delete-recipe" class="button button-quiet" type="button" disabled>Excluir</button>
+            </div>
+          </div>
+
+          <div class="backup-row">
+            <button id="export-recipes" class="text-button" type="button">Exportar backup JSON</button>
+            <label class="text-button file-button" for="import-recipes">Importar backup JSON</label>
+            <input id="import-recipes" type="file" accept="application/json,.json" hidden>
+          </div>
+        </section>
+
+        <section class="panel result-panel" aria-labelledby="result-heading">
+          <div class="section-heading">
+            <div>
+              <p class="eyebrow">PRÉVIA</p>
+              <h2 id="result-heading">Informação nutricional</h2>
+            </div>
+            <button id="print-label" class="button button-outline print-button" type="button">Imprimir / PDF</button>
+          </div>
+
+          <div id="calculation-warning" class="notice notice-warning" role="status">
+            Aguardando ingredientes. Os resultados são estimativas e não representam validação regulatória.
+          </div>
+
+          <article id="nutrition-label" class="nutrition-label" aria-live="polite">
+            <h3>INFORMAÇÃO NUTRICIONAL</h3>
+            <p id="label-recipe-name" class="label-recipe-name">Sua receita</p>
+            <p id="label-serving" class="label-serving">Porção: 100 g</p>
+            <table>
+              <thead>
+                <tr><th>Nutriente</th><th>100 g</th><th id="serving-column">100 g</th><th>%VD*</th></tr>
+              </thead>
+              <tbody id="nutrition-rows">
+                <tr><td colspan="4" class="label-empty">A tabela será calculada quando você adicionar ingredientes.</td></tr>
+              </tbody>
+            </table>
+            <p class="label-footnote">*Percentual estimado dos valores diários fornecidos pela porção. Traços, valores ausentes e regras de arredondamento podem requerer avaliação técnica.</p>
+            <p class="experimental-mark">PRÉVIA EXPERIMENTAL — NÃO USAR COMO RÓTULO FINAL</p>
+          </article>
+        </section>
+      </div>
+
+      <aside class="disclaimer">
+        <span class="disclaimer-icon" aria-hidden="true">i</span>
+        <p><strong>Importante:</strong> a TACO não informa açúcares totais ou adicionados e nem todos os nutrientes estão disponíveis para todos os alimentos. Campos ausentes aparecem como “ND”. Esta prévia não aplica todas as exigências da ANVISA e não deve ser usada em embalagem comercial sem revisão profissional.</p>
+      </aside>
+    </main>
+
+    <footer>
+      <span>RotulaMini · código e dados carregados localmente</span>
+      <a href="./LEIA-ME.md">Como funciona</a>
+    </footer>
+  </body>
+</html>
