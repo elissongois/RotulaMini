@@ -125,9 +125,14 @@ export function calculateNutrition(ingredients, foodById, yieldGrams, servingGra
   if (!Array.isArray(ingredients) || ingredients.length === 0) {
     throw new Error("Adicione pelo menos um ingrediente.");
   }
-  const normalizedIngredients = ingredients.map(({ foodId, grams }) => {
-    const food = foodById.get(Number(foodId));
-    const amount = Number(grams);
+  const normalizedIngredients = ingredients.map((ingredient) => {
+    const foodId = ingredient.foodId ?? ingredient.id;
+    const key = String(foodId);
+    const compositeKey = ingredient.source && ingredient.sourceId
+      ? `${ingredient.source}:${ingredient.sourceId}`
+      : key;
+    const food = foodById.get(compositeKey) ?? foodById.get(key) ?? foodById.get(Number(foodId));
+    const amount = Number(ingredient.grams);
     if (!food) throw new Error(`Alimento não encontrado (ID ${foodId}).`);
     if (!Number.isFinite(amount) || amount <= 0) throw new Error(`Quantidade inválida para ${food.description}.`);
     return { food, grams: amount };

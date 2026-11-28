@@ -26,6 +26,20 @@
 
       <div id="app-error" class="notice notice-error" role="alert" hidden></div>
 
+      <details class="panel source-panel">
+        <summary>Fontes de composicao e consulta online</summary>
+        <label class="online-toggle">
+          <input id="online-enabled" type="checkbox" checked>
+          Permitir consulta online
+        </label>
+        <div id="source-list" class="source-list"></div>
+        <div class="source-add">
+          <label class="field"><span>Nome da fonte</span><input id="source-name" type="text" placeholder="Ex.: Minha base"></label>
+          <label class="field"><span>URL</span><input id="source-url" type="url" placeholder="https://"></label>
+          <button id="add-source" class="button button-outline" type="button">Cadastrar</button>
+        </div>
+      </details>
+
       <div class="workspace">
         <section class="panel recipe-panel" aria-labelledby="recipe-heading">
           <div class="section-heading">
@@ -59,10 +73,31 @@
               <datalist id="food-options"></datalist>
             </label>
             <label class="field quantity-field">
-              <span>Quantidade (g)</span>
+              <span>Quantidade (g ou ml)</span>
               <input id="ingredient-grams" type="number" min="0.01" step="any" inputmode="decimal" placeholder="Ex.: 250">
             </label>
+            <label class="field unit-field">
+              <span>Unidade</span>
+              <select id="ingredient-unit"><option value="g">g</option><option value="ml">ml</option></select>
+            </label>
+            <label class="field correction-field">
+              <span>Fator de correcao</span>
+              <input id="ingredient-correction" type="number" min="0.01" step="any" value="1">
+            </label>
             <button id="add-ingredient" class="button button-dark add-button" type="button" disabled>Adicionar</button>
+          </div>
+
+          <div class="online-search">
+            <label class="field">
+              <span>Fonte online habilitada</span>
+              <select id="source-search-select" disabled></select>
+            </label>
+            <label class="field">
+              <span>Buscar na fonte</span>
+              <input id="source-search" type="search" placeholder="Ex.: arroz" autocomplete="off" disabled>
+            </label>
+            <button id="source-search-button" class="button button-outline" type="button" disabled>Pesquisar</button>
+            <div id="source-search-results" class="source-search-results"></div>
           </div>
 
           <div class="ingredients-heading">
@@ -72,10 +107,10 @@
           <div class="ingredient-list-wrap">
             <table class="ingredient-table">
               <thead>
-                <tr><th>Alimento</th><th>Quantidade</th><th><span class="sr-only">Ação</span></th></tr>
+                <tr><th>Alimento</th><th>Quantidade</th><th>Origem</th><th><span class="sr-only">Ação</span></th></tr>
               </thead>
               <tbody id="ingredient-list">
-                <tr class="empty-row"><td colspan="3">Adicione os ingredientes para começar.</td></tr>
+                <tr class="empty-row"><td colspan="4">Adicione os ingredientes para começar.</td></tr>
               </tbody>
             </table>
           </div>
@@ -89,6 +124,7 @@
             </label>
             <div class="button-row">
               <button id="save-recipe" class="button button-outline" type="button">Salvar receita</button>
+              <button id="save-recipe-as" class="button button-outline" type="button" disabled>Salvar como</button>
               <button id="delete-recipe" class="button button-quiet" type="button" disabled>Excluir</button>
             </div>
           </div>
@@ -128,6 +164,9 @@
             <p class="label-footnote">*Percentual estimado dos valores diários fornecidos pela porção. Traços, valores ausentes e regras de arredondamento podem requerer avaliação técnica.</p>
             <p class="experimental-mark">PRÉVIA EXPERIMENTAL — NÃO USAR COMO RÓTULO FINAL</p>
           </article>
+          <aside id="ingredient-sheet" class="ingredient-sheet">
+            Selecione o nome de um ingrediente para ver sua ficha.
+          </aside>
         </section>
       </div>
 

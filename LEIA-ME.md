@@ -6,15 +6,15 @@ O RotulaMini é uma aplicação web estática: não possui conta, servidor de ap
 
 ## Executar
 
-É necessário ter Python 3 instalado. No terminal, dentro desta pasta, execute:
+É necessário ter Python 3 instalado. No terminal, dentro desta pasta, execute o servidor com proxy TBCA:
 
 ```bash
-python3 -m http.server 8000
+python3 server.py
 ```
 
 Abra <http://127.0.0.1:8000> no navegador. Para encerrar, volte ao terminal e pressione `Ctrl+C`.
 
-Use um servidor local em vez de abrir `index.html` por duplo clique: navegadores restringem o carregamento de arquivos de dados locais (`file://`).
+Use o servidor em vez de abrir `index.html` por duplo clique: o navegador precisa do proxy local `/api/tbca/*` para consultar a TBCA.
 
 Não é necessária conexão à internet depois de baixar o repositório.
 
@@ -47,6 +47,14 @@ Créditos, licença informada pelo projeto de origem e fontes originais estão r
 - As receitas ficam no IndexedDB local do navegador.
 - A exportação JSON é salva no dispositivo pelo navegador.
 - A base TACO é lida dos arquivos locais dentro de `data/`.
+
+## Bases online
+
+A pesquisa TBCA é feita pelo proxy Python local nos endpoints `/api/tbca/search` e `/api/tbca/detail`. A consulta depende da chave geral **Permitir consulta online**, da fonte TBCA habilitada e do servidor. Nenhuma cópia da base é salva no navegador ou no projeto.
+
+LATINFOODS e FoodData Central ficam cadastradas desabilitadas até haver adaptadores verificados. Fontes personalizadas são somente metadados; cadastrar uma URL não implementa automaticamente sua consulta.
+
+Em implantação pública, o proxy deve ser servido na mesma origem do aplicativo. Chaves de API de provedores devem ficar em variáveis de ambiente do servidor e nunca no código, backups ou armazenamento do navegador.
 
 ## Desenvolvimento e testes
 

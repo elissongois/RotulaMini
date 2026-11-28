@@ -2,6 +2,7 @@ import test from "node:test";
 import assert from "node:assert/strict";
 import { readFile } from "node:fs/promises";
 import { buildFoodCatalog, calculateNutrition, parseCsv } from "../src/nutrition.mjs";
+import { loadSourceConfig, INITIAL_SOURCES, SOURCE_STORAGE_KEY, ONLINE_STORAGE_KEY } from "../src/sources.mjs";
 
 test("parseCsv handles quoted commas, escaped quotes, CRLF and missing values", () => {
   const rows = parseCsv('id,nome,valor\r\n1,"Arroz, integral",1e-05\r\n2,"""Teste""",\r\n');
@@ -67,4 +68,38 @@ test("the pinned TACO CSV files load and calculate a known food", async () => {
   assert.ok(Math.abs(result.per100g.energyKcal - 123.5348925) < 1e-8);
   assert.equal(result.perServing.energyKcal, result.per100g.energyKcal);
   assert.equal(result.per100g.totalSugarsG, null);
+});
+
+test("source config starts with the planned initial states and persists removals", () => {
+  const data = new Map();
+  const storage = {
+    getItem(key) { return data.has(key) ? data.get(key) : null; },
+    setItem(key, value) { data.set(key, value); }
+  };
+  const initial = loadSourceConfig(storage);
+  assert.equal(initial.onlineEnabled, true);
+  assert.equal(initial.sources.find(({ id }) => id === "tbca").enabled, true);
+  assert.equal(initial.sources.find(({ id }) => id === "latinfoods").enabled, false);
+
+  const saved = [{ ...INITIAL_SOURCES[0], enabled: false }];
+  storage.setItem(SOURCE_STORAGE_KEY, JSON.stringify(saved));
+  storage.setItem(ONLINE_STORAGE_KEY, "false");
+  const loaded = loadSourceConfig(storage);
+  assert.equal(loaded.onlineEnabled, false);
+  assert.deepEqual(loaded.sources.map(({ id, enabled }) => ({ id, enabled })), [
+    { id: "tbca", enabled: false }
+  ]);
+});
+
+test("calculateNutrition accepts isolated sources and does not collide identifiers", () => {
+  const taco = { id: 1, source: "taco", sourceId: "1", description: "TACO", nutrients: { energyKcal: 100, carbohydrateG: 10, totalSugarsG: null, addedSugarsG: null, proteinG: 5, totalFatG: 2, saturatedFatG: 1, transFatG: 0, fiberG: 3, sodiumMg: 10 } };
+  const tbca = { id: "x", source: "tbca", sourceId: "x", description: "TBCA", nutrients: { energyKcal: 200, carbohydrateG: 20, totalSugarsG: 5, addedSugarsG: null, proteinG: 10, totalFatG: 4, saturatedFatG: 2, transFatG: 0, fiberG: 6, sodiumMg: 20 } };
+  const result = calculateNutrition(
+    [{ source: "taco", sourceId: "1", grams: 100 }, { source: "tbca", sourceId: "x", grams: 100 }],
+    new Map([[ "taco:1", taco ], [ "tbca:x", tbca ]]),
+    200,
+    100
+  );
+  assert.equal(result.per100g.energyKcal, 150);
+  assert.equal(result.per100g.proteinG, 7.5);
 });

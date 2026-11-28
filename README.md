@@ -6,15 +6,15 @@ RotulaMini is a static web application: it has no account, application server, o
 
 ## Run
 
-Python 3 is required. From this directory, run:
+Python 3 is required. From this directory, run the app and TBCA proxy:
 
 ```bash
-python3 -m http.server 8000
+python3 server.py
 ```
 
 Open <http://127.0.0.1:8000> in your browser. To stop the server, return to the terminal and press `Ctrl+C`.
 
-Use a local server instead of opening `index.html` by double-clicking it: browsers restrict loading local data files (`file://`).
+Use the proxy server instead of opening `index.html` by double-clicking it: browsers restrict local data files and TBCA requires same-origin proxy access.
 
 An internet connection is not required after downloading the repository.
 
@@ -47,6 +47,14 @@ Credits, the license declared by the source project, and the original sources ar
 - Recipes are stored in the browser's local IndexedDB.
 - JSON exports are saved to your device by the browser.
 - TACO data is read from local files in `data/`.
+
+## Online sources
+
+TBCA searches use the local Python proxy at `/api/tbca/search` and `/api/tbca/detail`. Queries require the general **Allow online lookup** switch, an enabled TBCA source, and the server. No database copy is saved in the browser or repository.
+
+LATINFOODS and FoodData Central are registered but disabled until verified adapters are implemented. Custom sources store metadata only; adding a URL does not automatically make it queryable.
+
+Public deployments must expose the proxy on the same origin. Provider API keys belong in server environment variables, never in source code, backups, or browser storage.
 
 ## Development and tests
 
