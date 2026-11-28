@@ -157,11 +157,31 @@ def parse_detail(record_id):
             nutrients["sodiumMg"] = value
 
     name = "Alimento TBCA"
-    title_match = re.search(r"<h[1-4][^>]*>(.*?)</h[1-4]>", body, re.I | re.S)
-    if title_match:
-        title = strip_tags(title_match.group(1))
-        if title:
-            name = title
+    generic_names = (
+        "Alimento TBCA",
+        "Composição de Alimentos",
+        "Composição de Alimentos (Em Medidas Caseiras) Personalizadas",
+        "Composicao de Alimentos",
+    )
+    h5_matches = re.findall(r"<h5[^>]*>(.*?)</h5>", body, re.I | re.S)
+    for h5 in h5_matches:
+        description_match = re.search(
+            r"<strong>\s*Descri(?:c|ç)(?:a|ã)o\s*:</strong>\s*(.*?)(?:<br|$)",
+            h5,
+            re.I | re.S,
+        )
+        if description_match:
+            description = strip_tags(description_match.group(1))
+            if description:
+                name = description.split(" (", 1)[0].strip()
+                break
+    if name == "Alimento TBCA":
+        title_matches = re.findall(r"<h[1-4][^>]*>(.*?)</h[1-4]>", body, re.I | re.S)
+        for title_match in title_matches:
+            title = strip_tags(title_match)
+            if title and not any(generic.casefold() in title.casefold() for generic in generic_names):
+                name = title
+                break
     return {"id": record_id, "name": name, "nutrients": nutrients}
 
 

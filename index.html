@@ -68,7 +68,7 @@
 
           <div class="ingredient-entry">
             <label class="field food-field">
-              <span>Buscar alimento na TACO</span>
+              <span>Buscar ingrediente em todas as bases habilitadas</span>
               <input id="food-search" list="food-options" type="search" placeholder="Digite para buscar…" autocomplete="off">
               <datalist id="food-options"></datalist>
             </label>
@@ -87,18 +87,7 @@
             <button id="add-ingredient" class="button button-dark add-button" type="button" disabled>Adicionar</button>
           </div>
 
-          <div class="online-search">
-            <label class="field">
-              <span>Fonte online habilitada</span>
-              <select id="source-search-select" disabled></select>
-            </label>
-            <label class="field">
-              <span>Buscar na fonte</span>
-              <input id="source-search" type="search" placeholder="Ex.: arroz" autocomplete="off" disabled>
-            </label>
-            <button id="source-search-button" class="button button-outline" type="button" disabled>Pesquisar</button>
-            <div id="source-search-results" class="source-search-results"></div>
-          </div>
+          <div id="source-search-results" class="source-search-results" aria-live="polite"></div>
 
           <div class="ingredients-heading">
             <h3>Ingredientes</h3>
@@ -142,7 +131,20 @@
               <p class="eyebrow">PRÉVIA</p>
               <h2 id="result-heading">Informação nutricional</h2>
             </div>
-            <button id="print-label" class="button button-outline print-button" type="button">Imprimir / PDF</button>
+            <div class="label-actions">
+              <label class="field table-format-field">
+                <span>Formato da tabela</span>
+                <select id="table-format">
+                  <option value="vertical">Vertical padrão</option>
+                  <option value="horizontal">Horizontal</option>
+                  <option value="vertical-broken">Vertical quebrado</option>
+                  <option value="horizontal-broken">Horizontal quebrado</option>
+                  <option value="linear">Linear</option>
+                  <option value="aggregate">Agregado</option>
+                </select>
+              </label>
+              <button id="print-label" class="button button-outline print-button" type="button">PDF</button>
+            </div>
           </div>
 
           <div id="calculation-warning" class="notice notice-warning" role="status">
@@ -164,6 +166,11 @@
             <p class="label-footnote">*Percentual estimado dos valores diários fornecidos pela porção. Traços, valores ausentes e regras de arredondamento podem requerer avaliação técnica.</p>
             <p class="experimental-mark">PRÉVIA EXPERIMENTAL — NÃO USAR COMO RÓTULO FINAL</p>
           </article>
+          <div class="export-actions">
+            <button id="export-label-svg" class="text-button" type="button">Exportar SVG</button>
+            <button id="export-label-png" class="text-button" type="button">Exportar PNG</button>
+            <button id="export-label-csv" class="text-button" type="button">Exportar CSV</button>
+          </div>
           <aside id="ingredient-sheet" class="ingredient-sheet">
             Selecione o nome de um ingrediente para ver sua ficha.
           </aside>

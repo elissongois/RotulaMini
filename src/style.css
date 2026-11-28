@@ -123,6 +123,7 @@ main { width: min(1220px, calc(100% - 48px)); margin: 0 auto; }
 .ingredient-table td:nth-child(2) { width: 95px; white-space: nowrap; }
 .ingredient-table td:last-child, .ingredient-table th:last-child { width: 66px; text-align: right; }
 .ingredient-table td input { width: 72px; height: 32px; border: 1px solid #dfe5df; border-radius: 6px; }
+.ingredient-unit { width: 48px; height: 32px; margin-left: 2px; border: 1px solid #dfe5df; border-radius: 6px; background: #fff; }
 .ingredient-name { border: 0; padding: 0; color: var(--green-dark); background: none; cursor: pointer; font-weight: 650; text-align: left; }
 .ingredient-name:hover { text-decoration: underline; }
 .source-panel { margin: 0 0 20px; }
@@ -137,9 +138,17 @@ main { width: min(1220px, calc(100% - 48px)); margin: 0 auto; }
 .switch-label { font-size: 12px; }
 .source-add { display: grid; grid-template-columns: 1fr 1fr auto; gap: 10px; align-items: end; margin-top: 12px; }
 .online-search { display: grid; grid-template-columns: 180px minmax(150px,1fr) auto; gap: 10px; align-items: end; margin-top: 16px; }
-.source-search-results { grid-column: 1 / -1; display: flex; flex-wrap: wrap; gap: 6px; min-height: 0; }
+.source-search-results { display: block; max-height: 260px; overflow-y: auto; margin-top: 10px; border: 1px solid var(--line); border-radius: 8px; }
+.source-search-results[hidden] { display: none; }
+.search-results-table { width: 100%; border-collapse: collapse; }
+.search-results-table th { padding: 7px 9px; color: #859087; background: #f8faf8; text-align: left; font-size: 10px; }
+.search-results-table td { padding: 5px 9px; border-top: 1px solid #eef0ec; font-size: 11px; }
+.search-results-table td:first-child { width: 90px; color: var(--muted); }
 .search-result { max-width: 100%; padding: 6px 8px; border: 1px solid #dce4dc; border-radius: 6px; color: var(--green-dark); background: #fff; cursor: pointer; text-align: left; font-size: 11px; }
 .ingredient-sheet { margin-top: 16px; padding: 14px; border: 1px solid var(--line); border-radius: 8px; color: var(--muted); font-size: 11px; }
+.ingredient-sheet[hidden] { display: none; }
+.ingredient-sheet-close { float: right; width: 26px; height: 26px; border: 0; border-radius: 50%; color: #667269; background: #eef2ed; cursor: pointer; font-size: 16px; line-height: 1; }
+.ingredient-sheet-close:hover { color: #fff; background: var(--green); }
 .ingredient-sheet h3 { margin: 0 0 3px; color: var(--ink); }
 .ingredient-sheet p { margin: 0 0 8px; }
 .ingredient-sheet table { width: 100%; border-collapse: collapse; }
@@ -158,7 +167,34 @@ main { width: min(1220px, calc(100% - 48px)); margin: 0 auto; }
 .file-button { display: inline-flex; align-items: center; }
 
 .result-panel .section-heading { align-items: end; }
+.label-actions { display: flex; align-items: end; gap: 8px; }
+.table-format-field { width: 150px; }
+.table-format-field select { height: 34px; }
 .print-button { min-height: 34px; font-size: 11px; }
+.export-actions { display: flex; justify-content: flex-end; gap: 14px; margin-top: 10px; }
+.nutrition-label.table-format-horizontal table,
+.nutrition-label.table-format-horizontal-broken table,
+.nutrition-label.table-format-aggregate table { table-layout: fixed; }
+.nutrition-label.table-format-horizontal { border-width: 2px; }
+.nutrition-label.table-format-horizontal table { border-left: 2px solid #111; }
+.nutrition-label.table-format-horizontal table th,
+.nutrition-label.table-format-horizontal table td { font-size: 10px; }
+.nutrition-label.table-format-horizontal table thead th:nth-child(n),
+.nutrition-label.table-format-horizontal table tbody td:nth-child(n) { text-align: center; }
+.nutrition-label.table-format-horizontal table th:first-child,
+.nutrition-label.table-format-horizontal table td:first-child { width: 46%; text-align: left; }
+.nutrition-label.table-format-vertical-broken table tbody { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); }
+.nutrition-label.table-format-vertical-broken table tbody tr { display: grid; grid-template-columns: minmax(90px, 1fr) repeat(3, minmax(28px, .28fr)); border-bottom: 1px solid #777; }
+.nutrition-label.table-format-vertical-broken table tbody td,
+.nutrition-label.table-format-vertical-broken table tbody th { font-size: 8px; }
+.nutrition-label.table-format-vertical-broken table tbody tr:nth-child(odd) { border-right: 1px solid #777; }
+.nutrition-label.table-format-horizontal-broken table tbody tr:nth-child(5) { border-bottom: 4px double #111; }
+.nutrition-label.table-format-horizontal-broken table tbody tr:nth-child(n+6) { background: #fafafa; }
+.nutrition-label.table-format-horizontal-broken table tbody tr:nth-child(n+6) td:first-child { padding-left: 10px; }
+.nutrition-label.table-format-aggregate table { border-top: 5px double #111; }
+.nutrition-label.table-format-aggregate table tbody tr:nth-child(2n) td { background: #ececec; }
+.format-linear-output { margin: 12px 0 4px; padding: 10px; border: 2px solid #111; font-size: 10px; line-height: 1.55; }
+.nutrition-label.table-format-linear tbody td { border-bottom: 0; }
 .notice { margin-bottom: 16px; padding: 10px 12px; border: 1px solid #f0dfb8; border-radius: 7px; color: var(--amber); background: var(--amber-bg); font-size: 10px; line-height: 1.5; }
 .notice-error { border-color: #f2c7bf; color: var(--red); background: var(--red-bg); }
 .notice-success { border-color: #c9dfce; color: var(--green-dark); background: #eff8f0; }
@@ -222,7 +258,7 @@ footer a:hover { text-decoration: underline; }
   @page { size: auto; margin: 12mm; }
   body { background: #fff; }
   .site-header, .intro, .recipe-panel, .result-panel > .section-heading,
-  #calculation-warning, .disclaimer, footer { display: none !important; }
+  #calculation-warning, .source-panel, .export-actions, .disclaimer, footer { display: none !important; }
   main { width: 100%; margin: 0; }
   .workspace { display: block; }
   .result-panel { max-width: 100%; padding: 0; border: 0; box-shadow: none; }
@@ -230,4 +266,37 @@ footer a:hover { text-decoration: underline; }
   .nutrition-label h3 { font-size: 16pt; }
   .nutrition-label table { font-size: 8pt; }
   .nutrition-label th, .nutrition-label td { padding: 4px 3px; }
+  .nutrition-label.table-format-horizontal { width: 95mm; }
+  .nutrition-label.table-format-horizontal table { border-left: 2px solid #111; }
+  .nutrition-label.table-format-vertical-broken table tbody {
+    display: grid;
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+    column-gap: 3mm;
+    row-gap: 0;
+  }
+  .nutrition-label.table-format-vertical-broken table tbody tr {
+    display: grid;
+    grid-template-columns: minmax(70px, 1fr) repeat(3, minmax(24px, .28fr));
+    align-items: start;
+  }
+  .nutrition-label.table-format-vertical-broken table tbody td {
+    min-width: 0;
+    overflow-wrap: anywhere;
+  }
+  .nutrition-label.table-format-horizontal-broken table tbody tr:nth-child(5) {
+    border-bottom: 4px double #111;
+  }
+  .nutrition-label.table-format-horizontal-broken table tbody tr:nth-child(6) {
+    margin-top: 4mm;
+    border-top: 4px double #111;
+  }
+  .nutrition-label.table-format-linear table { display: none; }
+  .nutrition-label.table-format-linear .format-linear-output {
+    display: block;
+    width: 100%;
+    box-sizing: border-box;
+    overflow-wrap: anywhere;
+  }
+  .nutrition-label.table-format-aggregate { width: 95mm; }
+  .nutrition-label.table-format-aggregate table { border-top: 5px double #111; }
 }
